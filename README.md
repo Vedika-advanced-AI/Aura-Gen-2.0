@@ -3,6 +3,7 @@ license: apache-2.0
 library_name: llama.cpp
 pipeline_tag: text-generation
 tags:
+- conversational
 - ternary
 - 2-bit
 - gguf
