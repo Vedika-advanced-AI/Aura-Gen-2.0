@@ -1,0 +1,7 @@
+- dataset:
+    id: openai/gsm8k
+    task_id: gsm8k
+  source:
+    name: Model Card
+    url: https://huggingface.co/prism-ml/Ternary-Bonsai-27B-gguf
+  value: 96.06
