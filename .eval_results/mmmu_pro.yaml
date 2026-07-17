@@ -1,6 +1,6 @@
 - dataset:
     id: MMMU/MMMU_Pro
-    task_id: mmmu_pro_standard_4_options
+    task_id: mmmu_pro_vision
   source:
     name: Model Card
     url: https://huggingface.co/prism-ml/Ternary-Bonsai-27B-gguf
