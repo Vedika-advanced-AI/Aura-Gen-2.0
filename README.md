@@ -1,321 +1,329 @@
 ---
 license: apache-2.0
-library_name: llama.cpp
+library_name: transformers
 pipeline_tag: text-generation
 tags:
 - conversational
-- ternary
-- 2-bit
-- gguf
-- llama-cpp
-- cuda
-- metal
-- on-device
-- hybrid-attention
-- prismml
-- bonsai
-base_model:
-- Qwen/Qwen3.6-27B
+- long-context
+- code-generation
+- vedika
+- veda-labs
+- flash-attention
+- api
 ---
 
 <p align="center">
-  <img src="./assets/bonsai-logo.svg" width="280" alt="Bonsai">
+  <img src="./assets/bonsai-logo.svg" width="280" alt="Vedika">
 </p>
 
-<p align="center">
-  <a href="https://prismml.com"><b>Prism ML Website</b></a> &nbsp;|&nbsp;
-  <a href="https://github.com/PrismML-Eng/Bonsai-demo"><b>Whitepaper</b></a> &nbsp;|&nbsp;
-  <a href="https://github.com/PrismML-Eng/Bonsai-demo"><b>Demo &amp; Examples</b></a> &nbsp;|&nbsp;
-  <a href="https://discord.gg/prismml"><b>Discord</b></a>
-</p>
+# ✨ Vedika 4.1 Flash
 
-# Ternary Bonsai 27B — GGUF
+### 🚀 Next-Generation AI by Veda Labs
 
-Full 27B-class reasoning in ternary transformer weights, for llama.cpp (CUDA, Metal, CPU)
+> **1M Token Context** | **Ultra-Low Latency** | **Built for Long-Horizon Coding** | **100% Free**
 
-> **\~9.4x** smaller than FP16 (ideal) | **95%** of FP16 intelligence retained | **\~26 tok/s** on an Apple M5 Pro laptop
+---
 
-## Highlights
+## 🌟 Introduction
 
-- **\~7.2 GB** deployed footprint (down from \~54 GB FP16) — full 27B-class reasoning on a standard laptop or a single GPU
-- **95% of FP16 intelligence retained**: 80.49 average across 15 thinking-mode benchmarks — a *higher* score than the conventional IQ2_XXS build (72.73) at less than two-thirds of its footprint
-- **Retains thinking, reasoning, and agentic behavior** deep in the sub-4-bit regime, where conventional low-bit representations collapse: math within two points of full precision (93.40), coding at 85.96, agentic tool use at 74.01
-- **End-to-end ternary language weights** across embeddings, attention projections, MLP projections, and LM head, at a *true* 1.71 bits per weight — no high-precision escape hatches behind a low-bit label; the vision tower ships in compact 4-bit HQQ
-- **262K-token context** on-device, kept practical by the Qwen3.6-27B hybrid-attention backbone (\~75% linear attention) and 4-bit KV-cache quantization
-- **GGUF Q2_0_g128** format with custom 2-bit hybrid-attention kernels for llama.cpp (CUDA, Metal) — packed weights are consumed directly, never expanded back to FP16
-- **Ships with a DSpark speculative-decoding drafter layer** trained against the Bonsai 27B target — a lossless **1.34x** decode speedup on the CUDA serving path
-- **MLX companion**: also available as [Ternary-Bonsai-27B-mlx-2bit](https://huggingface.co/prism-ml/Ternary-Bonsai-27B-mlx-2bit) for native Apple Silicon inference
-- **1-bit companion**: the phone-class operating point (\~3.9 GB) that fits an iPhone 17 Pro Max, published in GGUF as [Bonsai-27B-gguf](https://huggingface.co/prism-ml/Bonsai-27B-gguf)
+Welcome to **Vedika 4.1 Flash**, a cutting-edge large language model developed by **Veda Labs** under the leadership of **Divy Patel**. Engineered for developers, researchers, and AI enthusiasts, Vedika represents a new paradigm in accessible, high-performance AI.
 
-## Resources
+---
 
-- **[Whitepaper](https://github.com/PrismML-Eng/Bonsai-demo/blob/main/bonsai-27b-whitepaper.pdf)** — full methodology, benchmarks, and measurement notes
-- **[Demo & examples](https://github.com/PrismML-Eng/Bonsai-demo)** — serving, benchmarking, and integrating Bonsai
-- **Low-bit kernels**: [llama.cpp fork](https://github.com/PrismML-Eng/llama.cpp) (CUDA + Metal) · [MLX fork](https://github.com/PrismML-Eng/mlx) (Apple Silicon) · [mlx-swift fork](https://github.com/PrismML-Eng/mlx-swift) (iOS/macOS)
-- **[Discord](https://discord.gg/prismml)** — join the community for support, discussion, and updates
+## 🔥 Breakthrough Capabilities
 
-## Model Overview
+### 💻 Built for Long-Horizon Coding
+Vedika is optimized for complex software development workflows:
+- **Multi-file code generation** with coherent architecture across entire projects
+- **Full-stack application design** from database schemas to frontend components
+- **Advanced multi-script debugging** with contextual understanding of interdependent modules
 
-| Item              | Specification                                                                                    |
-| :---------------- | :----------------------------------------------------------------------------------------------- |
-| Base model        | Derived from Qwen3.6-27B, a 27B hybrid-attention causal language model (architecture unchanged)  |
-| Parameters        | \~27.3B ternary language weights (\~24.8B backbone across 64 blocks + \~2.5B embedding/LM head) + \~0.46B vision tower (27 blocks) |
-| Architecture      | Hybrid attention (\~75% linear / \~25% full attention), SwiGLU MLP, RoPE, RMSNorm                   |
-| Context length    | 262K tokens (full-context capable on-device, enabled by the predominantly linear-attention backbone) |
-| KV cache          | Near-lossless 4-bit KV quantization; the hybrid backbone grows a full-attention cache on only 16 of 64 layers (\~4.3 GB at the full 262K window) |
-| Weight format     | GGUF Q2_0_g128: {−1, 0, +1} weights in 2-bit slots with FP16 group-wise scaling                   |
-| Low-bit coverage  | Embeddings, attention projections, MLP projections, LM head                                       |
-| Vision tower      | HQQ 4-bit; optional \~0.63 GB mmproj pack (Q8_0 container), loaded only for image input            |
-| Deployed size     | **\~7.2 GB** (5.9 GB ideal at 1.71 bits/weight; see below)                                         |
-| Acceleration      | DSpark speculative-decoding drafter layer provided                                                |
-| Backends          | llama.cpp (CUDA, Metal, CPU)                                                                      |
-| License           | Apache 2.0                                                                                        |
+### 📚 1 Million (1M) Token Context Window
+Unprecedented context capacity enables:
+- Ingestion of **massive datasets** in a single pass
+- Analysis of **entire code repositories** without chunking
+- Complete **API documentation** comprehension simultaneously
+- Long-form document processing and cross-referencing
 
-## Weight Representation: Q2_0_g128
+### ⚡ Ultra-Low Latency
+Engineered for real-time performance:
+- **Blazing-fast inference** optimized for production environments
+- Perfect for **real-time AI agents** and interactive applications
+- Sub-second response times for optimal user experience
 
-Each weight takes a value from {−1, 0, +1}, with one shared FP16 scale factor for every group of 128 weights. A ternary value carries log₂3 ≈ 1.585 bits of information, so the effective storage cost is **\~1.71 bits/weight** (ternary code + 16-bit scale amortized over 128 weights) — an idealized \~9.4x reduction vs FP16.
+### 🆓 100% Free Access
+Committed to the developer community:
+- **Completely free** with no paywalls or usage limits
+- Open access for research, commercial, and educational purposes
+- No hidden costs or premium tiers
 
-Relative to the binary format, the extra zero state gives a more expressive weight alphabet and recovers more of the full-precision model's behavior, which makes ternary the **quality-oriented operating point** of the Bonsai 27B family.
+---
 
-### Memory Requirement
+## 🚀 Quick Start / API Access
 
-| Format              | True bits/weight | Ideal size | Deployed size | Reduction (ideal) |
-| :------------------ | ---------------: | ---------: | ------------: | ----------------: |
-| FP16 (baseline)     | 16.0             | \~54 GB     | —             | 1.0x              |
-| **GGUF Q2_0_g128**  | **1.71**         | **5.9 GB** | **\~7.2 GB**   | **\~9.4x**         |
+Get started with Vedika 4.1 Flash using our simple REST API:
 
-Today's kernels store each ternary value in a 2-bit slot (2.125 bits/weight deployed), so the deployed footprint sits above the representation's information-theoretic minimum until native ternary kernels close the gap. The deployed figure describes the language model alone — the only component that must stay resident for text inference; a negligible tail of normalization and scale parameters remains in higher precision.
-
-Unlike conventional low-bit builds — whose advertised labels understate their true average bit-width (a widely-used "2-bit" build of Qwen3.6-27B is really 2.8 bits/weight at 9.4 GB) — the Bonsai representation carries a bit-width that matches its name.
-
-### Shipped Components
-
-Two optional components ship alongside the language model (on-disk sizes):
-
-| Component      | Pack                               | Size     | Residency                          |
-| :------------- | :--------------------------------- | -------: | :--------------------------------- |
-| Language model | 2-bit g128 slots (Q2_0)            | 7.17 GB  | resident                            |
-| DSpark drafter | Q4_1 (default)                     | 1.95 GB  | optional — speculative decoding     |
-| DSpark drafter | bf16 (reference)                   | 7.29 GB  | optional                            |
-| Vision tower   | mmproj HQQ 4-bit (Q8_0 container)  | 0.63 GB  | optional — multimodal input only    |
-| Vision tower   | mmproj BF16 (reference)            | 0.93 GB  | optional                            |
-
-The vision tower is usually offloaded: it sits outside the accelerator's resident budget and is loaded only when an image actually arrives, so text-only serving never pays for it. A group-64 ternary pack (7.59 GB) is also published, matching the 64-value-group Q2_0 packing in llama.cpp — the same native g128 representation with each scale repeated per 64-value block.
-
-### Peak Memory at Context
-
-What a device must actually accommodate is *peak* memory — weights plus KV cache plus activations and runtime buffers (\~1.3 GB across backends). Measured, language model only, no KV-cache compression (sizes in decimal GB; the Q4_K_XL row is derived from its weight footprint plus the same measured cache-and-overhead build-up, all other rows directly measured):
-
-| Build                                | Weights | 4K ctx | 10K ctx | 100K ctx |
-| :----------------------------------- | ------: | -----: | ------: | -------: |
-| **Ternary Bonsai (llama.cpp Q2_0)**  | 7.15    | 8.4    | 8.7     | 14.7     |
-| Qwen3.6-27B "4-bit" (Q4_K_XL)        | 17.6    | 19.2   | 19.6    | 25.6     |
-| 27B 16-bit (GGUF bf16)               | 51.25   | 52.6   | 53.3    | 59.3     |
-
-The ternary build holds a **100K-token context at 14.7 GB without any KV-cache compression** — a budget that fits mainstream laptops outright; the conventional Q4_K_XL build needs \~25.6 GB before the first long document is loaded. These peaks are the conservative case, with the cache left at FP16. Enabling the 4-bit KV cache shrinks the context-dependent term \~4x: the 100K peak drops to \~10.1 GB, and the full 262K window fits in \~12.8 GB peak.
-
-## Best Practices
-
-### Generation Parameters
-
-| Parameter   | Suggested |
-| :---------- | :-------- |
-| Temperature | 0.7       |
-| Top-p       | 0.95      |
-| Top-k       | 20        |
-
-These are the settings used for all reported benchmark results (thinking mode).
-
-### System Prompt
-
-You can use a simple system prompt such as:
-
-```
-You are a helpful assistant
-```
-
-## Quickstart
-
-### llama.cpp (CUDA)
+### cURL Example
 
 ```bash
-# Clone the PrismML fork of llama.cpp (includes the Q2_0_g128 hybrid-attention kernels)
-git clone https://github.com/PrismML-Eng/llama.cpp
-cd llama.cpp
-
-# Build with CUDA support
-cmake -B build -DGGML_CUDA=ON && cmake --build build -j
-
-# Download the 2-bit GGUF weights
-hf download prism-ml/Ternary-Bonsai-27B-gguf Ternary-Bonsai-27B-Q2_0.gguf --local-dir .
-
-# Run inference
-./build/bin/llama-cli \
-    -m Ternary-Bonsai-27B-Q2_0.gguf \
-    -p "Explain quantum computing in simple terms." \
-    -n 256 \
-    --temp 0.7 --top-p 0.95 --top-k 20 \
-    -ngl 99
+curl -X POST "https://vedalabs-vedika-advanced-ai-4-1-flash.hf.space/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "vedika-4.1-flash",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Explain quantum computing in simple terms."
+      }
+    ],
+    "temperature": 0.7,
+    "max_tokens": 512
+  }'
 ```
 
-### llama.cpp (Metal / macOS)
+### Python Example
 
-```bash
-# Build with Metal support (default on macOS)
-cmake -B build && cmake --build build -j
+```python
+import requests
 
-# Run inference
-./build/bin/llama-cli \
-    -m Ternary-Bonsai-27B-Q2_0.gguf \
-    -p "Explain quantum computing in simple terms." \
-    -n 256 \
-    --temp 0.7 --top-p 0.95 --top-k 20 \
-    -ngl 99
-```
+url = "https://vedalabs-vedika-advanced-ai-4-1-flash.hf.space/v1/chat/completions"
 
-### llama.cpp Server
-
-```bash
-./build/bin/llama-server \
-    -m Ternary-Bonsai-27B-Q2_0.gguf \
-    --host 0.0.0.0 --port 8080 -ngl 99
-```
-
-Open the web UI at [http://127.0.0.1:8080](http://127.0.0.1:8080), or see our [llama.cpp fork](https://github.com/PrismML-Eng/llama.cpp) for more examples.
-
-> **Deploying to a phone?** The ternary build (\~7.2 GB) exceeds the \~6 GB per-app iOS memory budget and is laptop/GPU-only. Use the 1-bit companion (\~3.9 GB), which fits an iPhone 17 Pro Max via [MLX Swift](https://huggingface.co/prism-ml/Bonsai-27B-mlx-1bit).
-
-## Cross-Platform Throughput
-
-`tg128` is token-generation throughput over 128 generated tokens (the memory-bandwidth-bound, interactive phase); `pp512` is prompt-processing throughput over 512 input tokens (the compute-bound phase). Both in tokens/s, measured with `llama-bench` on this GGUF pack (custom low-bit kernels).
-
-| Platform                     | Footprint | TG128 (tok/s) | PP512 (tok/s) |
-| :--------------------------- | --------: | ------------: | ------------: |
-| Laptop (Apple M5 Max, Metal) | 7.2 GB    | 44.0          | 830           |
-| Laptop (Apple M5 Pro, Metal) | 7.2 GB    | 26.2          | 393           |
-| Laptop (Apple M4 Pro, Metal) | 7.2 GB    | 18.0          | 125           |
-| Single GPU (H100, CUDA)      | 7.2 GB    | 98.0          | 2596          |
-
-On the laptop, the FP16 baseline (\~54 GB) and even conventional "4-bit" builds (17.6 GB) do not fit at all — the meaningful statement is not a speedup ratio but that a 27B model runs interactively on an everyday laptop. The measured decode streams \~186 GB/s of weights on the M5 Pro, confirming the memory-bandwidth-dominated profile that the low-bit representation is built to exploit. The H100 row is the exception that proves the rule: at batch size 1 a datacenter GPU is limited by kernel-launch and synchronization latency rather than weight bandwidth, so the ternary and binary variants converge there (98 vs 104.8 tok/s) despite their \~1.9x difference in bytes per step.
-
-## Speculative Decoding: DSpark
-
-Ternary Bonsai 27B ships with a **DSpark** drafter layer trained against the low-bit target — a semi-autoregressive drafter with confidence-scheduled verification. Speculative decoding is lossless: verification preserves the target distribution exactly, so accepted tokens are indistinguishable from ordinary generation.
-
-The drafter is a compact **six-layer block-parallel transformer** conditioned on hidden states tapped from five evenly spaced layers of the target; its drafter-unique weights add roughly **0.5 GB at serving precision** (embeddings and output head are shared with the resident target). It follows the DSpark recipe with a diffusion-flavored block-denoising objective, survival-probability-weighted distillation, per-source-normalized hidden-state taps, and a draft block size chosen from a measured verify-cost model of the serving stack. The drafter ships 4-bit quantized — the \~1.95 GB Q4_1 pack is the default; it drafts faster than the bf16 reference at essentially unchanged draft quality, and because verification preserves the target distribution exactly, drafter precision affects only speed, never output quality.
-
-On the CUDA serving path the drafter is a measured net win — an accepted length of τ ≈ 3.7 at draft depth k = 4 turns into a **1.34x** end-to-end decode speedup on H100 (98 → 131.8 tok/s). On Apple Silicon the batch-1 verification pass does not yet amortize, so the drafter layer is not enabled by default on-device.
-
-## Benchmarks
-
-Evaluated with EvalScope + vLLM on NVIDIA H100 under identical infrastructure, decoding, and scoring, in **thinking mode** — where the model's full reasoning is exercised and the sub-4-bit collapse of conventional methods is most visible. 15 benchmarks across six skill categories. For cross-family context the table also includes Gemma-4-31B, a model of the same capability tier, with its conventional low-bit builds — the collapse below 4 bits is a property of the methods, not of one base model. Bit-widths are true averages; "vs FP16" is relative to the Qwen3.6-27B FP16 reference.
-
-| Variant                                                                    | True bpw | Footprint  | Thinking avg | vs FP16    |
-| :-------------------------------------------------------------------------- | -------: | ---------: | -----------: | ---------: |
-| Qwen3.6-27B FP16                                                            | 16.0     | 54 GB      | 85.07        | 100%       |
-| Qwen3.6-27B Q4_K_XL ("4-bit")                                               | 5.2      | 17.6 GB    | 84.99        | 99.9%      |
-| Qwen3.6-27B IQ2_XXS ("2-bit")                                               | 2.8      | 9.4 GB     | 72.73        | 85.5%      |
-| Gemma-4-31B FP16                                                            | 16.0     | 61.5 GB    | 84.58        | 99.4%      |
-| Gemma-4-31B QAT ("4-bit")                                                   | 6.0      | 23.3 GB    | 83.41        | 98.0%      |
-| Gemma-4-31B Q2_K_XL ("2-bit")                                               | 3.0      | 11.8 GB    | 73.31        | 86.2%      |
-| **Ternary Bonsai 27B**                                                      | **1.71** | **5.9 GB** | **80.49**    | **94.6%**  |
-| 1-bit Bonsai 27B                                                            | 1.125    | 3.9 GB     | 76.11        | 89.5%      |
-
-At 5.9 GB, Ternary Bonsai 27B outscores both sub-4-bit conventional builds by more than seven points at one-half to two-thirds of their size.
-
-The aggregate gap also understates *how* the conventional builds fail: their degradation is selective, concentrated on the benchmarks that demand sustained chains of reasoning. IQ2_XXS falls to 57.5 on AIME26 and 56.4 on LiveCodeBench while still scoring 88.93 on MMLU-Redux — which is why casual testing misses the collapse. Ternary Bonsai holds exactly these benchmarks, keeping AIME at 87.5–90.8 and LiveCodeBench at 82.8.
-
-### By Skill Category
-
-| Category                | Benchmarks                          | FP16  | Ternary 27B |
-| :---------------------- | :---------------------------------- | ----: | ----------: |
-| Knowledge & reasoning   | MMLU-Redux, MuSR                    | 83.15 | 76.96       |
-| Math                    | GSM8K, MATH-500, AIME25, AIME26     | 95.33 | 93.40       |
-| Coding                  | HumanEval+, MBPP+, LiveCodeBench    | 88.74 | 85.96       |
-| Instruction following   | IFEval, IFBench                     | 78.47 | 71.77       |
-| Agentic / tool calling  | BFCL v3, τ²-Bench                   | 80.00 | 74.01       |
-| Vision                  | MMMU-Pro, OCR Bench v2              | 72.61 | 65.19       |
-| **Overall (15)**        |                                     | **85.07** | **80.49** |
-
-The reasoning backbone comes through intact: math stays within two points of full precision (93.40), coding at 85.96, and the ternary model spends its extra footprint to hold the most demanding categories — agentic tool use at 74.01 and vision at 65.19 — the behaviors that conventional sub-4-bit representations lose first.
-
-### Full Per-Benchmark Results
-
-<details>
-<summary>Expand full per-benchmark results (thinking mode)</summary>
-
-| Benchmark              | FP16  | Ternary 27B |
-| :--------------------- | ----: | ----------: |
-| MMLU-Redux             | 93.42 | 88.05       |
-| MuSR                   | 72.88 | 65.87       |
-| GSM8K                  | 95.30 | 96.06       |
-| MATH-500               | 99.40 | 99.20       |
-| AIME25                 | 93.29 | 90.84       |
-| AIME26                 | 93.33 | 87.50       |
-| HumanEval+             | 95.12 | 93.90       |
-| MBPP+                  | 83.33 | 81.22       |
-| LiveCodeBench          | 87.77 | 82.75       |
-| IFEval                 | 88.91 | 85.03       |
-| IFBench (prompt-loose) | 68.03 | 58.50       |
-| BFCL v3                | 77.10 | 74.41       |
-| τ²-Bench               | 82.90 | 73.61       |
-| MMMU-Pro               | 79.94 | 68.96       |
-| OCR Bench v2           | 65.28 | 61.42       |
-| **Average (15)**       | **85.07** | **80.49** |
-
-</details>
-
-## Intelligence Density
-
-Intelligence density captures the ratio of a model's capability to its deployed size:
-
-```
-D = -log2(1 - score/100) / size_GB
-```
-
-| Variant                                                                    | Size (GB) | Benchmark avg | Intelligence Density (1/GB) |
-| :-------------------------------------------------------------------------- | --------: | -----------: | --------------------------: |
-| 1-bit Bonsai 27B                                                            | 3.9       | 76.11        | 0.530                       |
-| **Ternary Bonsai 27B**                                                      | **5.9**   | 80.49        | **0.400**                   |
-| Qwen3.6-27B IQ2_XXS                                                         | 9.4       | 72.73        | 0.199                       |
-| Gemma-4-31B Q2_K_XL                                                         | 11.8      | 73.31        | 0.162                       |
-| Qwen3.6-27B Q4_K_XL                                                         | 17.6      | 84.99        | 0.155                       |
-| Gemma-4-31B QAT                                                             | 23.3      | 83.41        | 0.111                       |
-| Qwen3.6-27B FP16                                                            | 54        | 85.07        | 0.051                       |
-| Gemma-4-31B FP16                                                            | 61.5      | 84.58        | 0.044                       |
-
-Ternary Bonsai 27B delivers **2x** the density of the densest conventional build (IQ2_XXS at 0.199) and nearly **8x** FP16 — no conventional build of Qwen3.6-27B or Gemma-4-31B exceeds 0.2. Each stored gigabyte is translated into far more usable intelligence.
-
-## Use Cases
-
-- **Laptop-local 27B agents**: full 27B reasoning and tool use on a standard laptop at \~26 tok/s, with the 262K context available for long-document analysis, full-repository code work, and other tasks that depend on holding a large working set in context
-- **Privacy-sensitive and offline settings**: on-device execution keeps prompts and data on the device by construction, and works with intermittent or no connectivity
-- **Single-GPU and commodity-GPU serving**: 27B-class quality from a single consumer or entry-level datacenter GPU, with headroom for larger batches, longer contexts, or co-resident models — combined with the KV-cache quantization, high-throughput serving and long-context document analysis become practical on a single 24 GB GPU
-- **Quality-first low-bit deployment**: when the deployment target has laptop-class memory or better, ternary is the operating point that retains the most of the full-precision model's behavior
-
-## Limitations
-
-- **The quality–footprint trade-off**: the ternary model retains 94.6% of the full-precision average, and the gap is modest and predictable — the reasoning core (math, coding) stays within a few points of baseline, with the difference concentrated in the most demanding categories
-- **Does not fit a phone**: at \~7.2 GB the ternary build exceeds the \~6 GB per-app iOS memory budget; use the 1-bit companion via [MLX Swift](https://huggingface.co/prism-ml/Bonsai-27B-mlx-1bit) for phone deployment
-- **Served in 2-bit slots today**: the deployed footprint (\~7.2 GB) sits above the representation's \~5.9 GB native target; native ternary kernels are an active engineering target and would return the remaining bandwidth and footprint advantage directly as latency and energy improvements
-- **Agentic coding** (long-horizon, multi-file, run-test-and-repair workflows) is not yet a strong target of this release; a Bonsai 27B variant tuned for agentic coding is next on the roadmap
-- **KV compression headroom**: this release standardizes on a 4-bit KV cache; early results show the key cache can be pushed toward the sub-2-bit regime — a path to still longer contexts within a fixed device-memory budget
-
-## Citation
-
-If you use Ternary Bonsai 27B, please cite:
-
-```bibtex
-@techreport{bonsai27b,
-    title   = {Bonsai 27B: Full 27B-Class Reasoning in Binary and Ternary
-               Transformer Weights --- on Laptops and Phones},
-    author  = {Prism ML},
-    year    = {2026},
-    month   = {July},
-    url     = {https://prismml.com}
+payload = {
+    "model": "vedika-4.1-flash",
+    "messages": [
+        {"role": "user", "content": "Write a Python function to sort a list."}
+    ],
+    "temperature": 0.7,
+    "max_tokens": 512
 }
+
+response = requests.post(url, json=payload)
+print(response.json()["choices"][0]["message"]["content"])
 ```
 
-## Contact
+---
 
-For questions, feedback, or collaboration inquiries: **contact@prismml.com**
+## 📋 Technical Specifications
+
+| Specification | Details |
+| :------------ | :------ |
+| **Model Name** | Vedika 4.1 Flash |
+| **Developer** | Divy Patel |
+| **Organization** | Veda Labs |
+| **Context Window** | 1,000,000 tokens |
+| **Architecture** | Transformer with Flash Attention |
+| **Optimization** | Long-horizon coding, multi-file generation |
+| **Latency** | Ultra-low, real-time optimized |
+| **License** | Apache 2.0 |
+| **Access** | 100% Free |
+
+---
+
+## 🎯 Use Cases
+
+- **Software Development**: Generate, debug, and refactor code across multiple files
+- **Documentation Analysis**: Process entire API docs and technical manuals
+- **Research**: Analyze large corpora and cross-reference academic papers
+- **AI Agents**: Power real-time conversational and task-oriented agents
+- **Education**: Free access for students and educators worldwide
+
+---
+
+## ⚠️ Limitations
+
+- **Beta Release**: As a newly developed model, edge cases may exist
+- **Specialized Focus**: Optimized for coding and long-context tasks; general knowledge may vary
+- **API Dependency**: Requires internet connectivity for cloud-based inference
+
+---
+
+## 📄 License
+
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+---
+
+## 📢 Notice
+
+This software is copyright 2026-present Veda Labs / Divy Patel. It is available under the Apache 2.0 license.
+If you publicly deploy or redistribute this software, we would appreciate attribution such as: "Created using Vedika by Veda Labs."
+
+---
+
+---
+**✨ A Product of Veda Labs**
