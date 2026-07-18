@@ -1,4 +1,4 @@
-name: Deploy to Hugging Face Space
+name: Deploy to Hugging Face Model
 
 on:
   push:
@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          lfs: true
 
       - name: Clean History and Force Push to HF
         env:
@@ -42,6 +44,6 @@ jobs:
           # 5. नया फ्रेश कमिट
           git commit -m "Clean deployment with comprehensive LFS tracking"
           
-          # 6. हगिंग फेस रिमोट सेट करें और फोर्स पुश करें
-          git remote add hf https://user:${HF_TOKEN}@huggingface.co/Veda-Labs/Vedika-4.1-flash
+          # 6. हगिंग फेस रिमोट सेट करें और फोर्स पुश करें (Model Repository के लिए)
+          git remote add hf "https://__token__:${HF_TOKEN}@huggingface.co/Veda-Labs/Vedika-4.1-flash"
           git push -f hf main
