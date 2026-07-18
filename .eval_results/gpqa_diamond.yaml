@@ -1,0 +1,11 @@
+# .eval_results/gpqa.yaml
+- dataset:
+    id: Idavidrein/gpqa
+    task_id: diamond
+  value: 72.22
+  date: "2026-07-18"
+  source:
+    url: https://huggingface.co/datasets/Idavidrein/gpqa
+    name: Community evaluation — GPQA Diamond (thinking mode, 198 questions, prism-ml/llama.cpp)
+    user: christopher-oneill
+  notes: "Q2, CTX=32768, thinking mode ON, temp=0.7, top-p=0.95, top-k=20, 143/198 correct, 44 wrong, 11 no-answer (OOTK), 0 errors, RTX4090 ~84 tok/s avg"
