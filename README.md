@@ -13,7 +13,7 @@ tags:
 ---
 
 <p align="center">
-  <img src="./assets/bonsai-logo.svg" width="280" alt="Vedika">
+  <img src="logo.png" width="280" alt="Vedika">
 </p>
 
 # ✨ Vedika 4.1 Flash
