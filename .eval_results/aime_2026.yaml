@@ -1,7 +1,0 @@
-- dataset:
-    id: MathArena/aime_2026
-    task_id: MathArena/aime_2026
-  source:
-    name: Model Card
-    url: https://huggingface.co/prism-ml/Ternary-Bonsai-27B-gguf
-  value: 87.5
